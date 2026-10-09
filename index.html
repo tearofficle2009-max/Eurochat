@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EuroChat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #050B14;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px 20px;
+            position: absolute;
+            top: 0;
+            background-color: #050B14;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        /* --- Common Elements --- */
+        .logo-box-small {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            border: 2px solid #00f0ff;
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .logo-box-small h2 {
+            color: #00f0ff;
+            font-size: 35px;
+        }
+
+        .heading {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .sub-heading {
+            color: #8a99ad;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            color: #8a99ad;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            background-color: #0d1b2a;
+            border: 1px solid #1b263b;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Buttons */
+        .btn-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background-color: #00f0ff;
+            color: #050B14;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #00f0ff;
+            border: 1px solid #00f0ff;
+        }
+
+        .back-arrow {
+            color: #00f0ff;
+            font-size: 20px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        /* --- 1. Splash Screen --- */
+        #splash-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .logo-box-large {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            border: 2px solid #00f0ff;
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+            margin-bottom: 25px;
+        }
+
+        .logo-box-large h1 {
+            color: #00f0ff;
+            font-size: 60px;
+        }
+
+        .loader {
+            width: 35px;
+            height: 35px;
+            border: 3px solid rgba(0, 240, 255, 0.2);
+            border-top: 3px solid #00f0ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-top: 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Splash Screen -->
+    <div id="splash-screen" class="screen active">
+        <div>
+            <div class="logo-box-large">
+                <h1>E</h1>
+            </div>
+            <div style="font-size: 32px; font-weight: bold; margin-bottom: 8px;">EuroChat</div>
+            <div style="color: #8a99ad; font-size: 14px;">Connect Nearby • Stay Connected</div>
+        </div>
+        <div class="loader"></div>
+    </div>
+
+    <!-- 2. Welcome Screen -->
+    <div id="welcome-screen" class="screen">
+        <div></div>
+        <div style="text-align: center;">
+            <div class="logo-box-small" style="margin: 0 auto 20px auto;">
+                <h2>E</h2>
+            </div>
+            <div class="heading">Welcome to EuroChat</div>
+            <div class="sub-heading">Connect with people around you nearby or worldwide effortlessly and securely.</div>
+        </div>
+        <div class="btn-container">
+            <button class="btn btn-primary" onclick="showScreen('login-screen')">Login</button>
+            <button class="btn btn-outline" onclick="showScreen('register-screen')">Create Account</button>
+        </div>
+    </div>
+
+    <!-- 3. Login Screen -->
+    <div id="login-screen" class="screen">
+        <div>
+            <span class="back-arrow" onclick="showScreen('welcome-screen')">← Back</span>
+            <div class="heading">Login to EuroChat</div>
+            <div class="sub-heading">Enter your details to access your account</div>
+            
+            <div class="form-group">
+                <label class="form-label">Phone Number / Email</label>
+                <input type="text" class="form-input" placeholder="Enter phone or email">
+            </div>
+        </div>
+        <div class="btn-container">
+            <button class="btn btn-primary" onclick="alert('Successfully Logged In!')">Login</button>
+        </div>
+    </div>
+
+    <!-- 4. Create Account Screen -->
+    <div id="register-screen" class="screen">
+        <div>
+            <span class="back-arrow" onclick="showScreen('welcome-screen')">← Back</span>
+            <div class="heading">Create Account</div>
+            <div class="sub-heading">Choose your registration method</div>
+            
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number or Email</label>
+                <input type="text" class="form-input" placeholder="Enter phone or email">
+            </div>
+        </div>
+        <div class="btn-container">
+            <button class="btn btn-primary" onclick="alert('Account Created Successfully!')">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Screen Switching Function
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Auto transition from Splash to Welcome after 2 seconds
+        setTimeout(() => {
+            showScreen('welcome-screen');
+        }, 2000);
+    </script>
+
+</body>
+</html>
