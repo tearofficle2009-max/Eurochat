@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EuroChat - Complete App Prototype</title>
+    <style>
+        :root {
+            --bg-deep: #050B14;
+            --bg-card: #0d1b2a;
+            --border-color: #1b263b;
+            --neon-blue: #00f0ff;
+            --electric-purple: #9d4edd;
+            --text-main: #ffffff;
+            --text-muted: #8a99ad;
+            --accent-pink: #ff007f;
+            --success: #2ec4b6;
+            --warning: #ff9f1c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #020408;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Phone Container Frame for stunning mockup presentation */
+        .phone-frame {
+            width: 100%;
+            max-width: 414px;
+            height: 100vh;
+            max-height: 896px;
+            background-color: var(--bg-deep);
+            position: relative;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 415px) {
+            .phone-frame {
+                border-radius: 36px;
+                height: 85vh;
+            }
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-deep);
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Common Utility Classes */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--neon-blue);
+            letter-spacing: 0.5px;
+        }
+
+        .back-btn {
+            color: var(--neon-blue);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--neon-blue), #0077b6);
+            color: var(--bg-deep);
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            box-shadow: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--neon-blue);
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 240, 255, 0.4);
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-deep);
+            position: sticky;
+            bottom: 0;
+            margin-top: auto;
+            z-index: 10;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            font-size: 11px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .nav-item.active {
+            color: var(--neon-blue);
+            font-weight: 600;
+        }
+
+        /* Floating AI Assistant Button */
+        .floating-ai {
+            position: absolute;
+            bottom: 75px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--neon-blue), var(--electric-purple));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        /* Specific Screen Styles */
+        /* Splash */
+        #splash-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .splash-logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--bg-card), var(--border-color));
+            border: 2px solid var(--neon-blue);
+            border-radius: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+            margin-bottom: 20px;
+        }
+
+        /* Stories Row */
+        .stories-container {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            scrollbar-width: none;
+        }
+        .stories-container::-webkit-scrollbar { display: none; }
+        
+        .story-ring {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            padding: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .story-avatar {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-card);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Chat bubbles */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 10px 0;
+        }
+        .message-bubble {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 13.5px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .message-bubble.incoming {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+        }
+        .message-bubble.outgoing {
+            background-color: var(--neon-blue);
+            color: var(--bg-deep);
+            align-self: flex-end;
+            font-weight: 500;
+        }
+
+        .badge {
+            background-color: rgba(0, 240, 255, 0.15);
+            color: var(--neon-blue);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+    <!-- 1. SPLASH SCREEN -->
+    <div id="screen-splash" class="screen active">
+        <div></div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <div class="splash-logo">E</div>
+            <div style="font-size: 28px; font-weight: bold; margin-bottom: 5px;">EuroChat</div>
+            <div style="color: var(--text-muted); font-size: 13px;">Connect Nearby • Stay Connected</div>
+        </div>
+        <div>
+            <button class="btn" onclick="navigateTo('screen-welcome')">Get Started</button>
+            <div style="text-align: center; margin-top: 15px;">
+                <span style="color: var(--neon-blue); font-size: 12px; cursor: pointer;" onclick="navigateTo('screen-admin-login')">🔒 Admin Login</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. WELCOME SCREEN -->
+    <div id="screen-welcome" class="screen">
+        <div>
+            <div class="header">
+                <div class="logo-text">EuroChat</div>
+                <div class="back-btn" onclick="navigateTo('screen-splash')">Back</div>
+            </div>
+            <div style="margin-top: 40px; text-align: center;">
+                <h2 style="font-size: 24px; margin-bottom: 10px;">Welcome to EuroChat</h2>
+                <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">Communicate locally via Bluetooth/Wi-Fi Direct without Internet, or fallback to Cloud when far away.</p>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="btn" onclick="navigateTo('screen-login')">Sign In</button>
+            <button class="btn btn-outline" onclick="navigateTo('screen-create-account')">Create Account</button>
+        </div>
+    </div>
+
+    <!-- 3. LOGIN SCREEN -->
+    <div id="screen-login" class="screen">
+        <div>
+            <div class="header">
+                <span class="back-btn" onclick="navigateTo('screen-welcome')">← Back</span>
+                <div class="logo-text">Sign In</div>
+                <div></div>
+            </div>
+            <div style="margin-top: 20px;">
+                <label style="font-size: 12px; color: var(--text-muted);">Phone Number or Email</label>
+                <input type="text" class="input-field" placeholder="Enter phone or email" style="margin-top: 5px;">
+                <label style="font-size: 12px; color: var(--text-muted);">EuroChat Password</label>
+                <input type="password" class="input-field" placeholder="Enter password" style="margin-top: 5px;">
+            </div>
+        </div>
+        <button class="btn" onclick="navigateTo('screen-home')">Continue to App</button>
+    </div>
+
+    <!-- 4. CREATE ACCOUNT -->
+    <div id="screen-create-account" class="screen">
+        <div>
+            <div class="header">
+                <span class="back-btn" onclick="navigateTo('screen-welcome')">← Back</span>
+                <div class="logo-text">Create Account</div>
+                <div></div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Choose your registration method:</p>
+            <button class="btn btn-outline" style="margin-bottom: 10px; text-align: left;" onclick="navigateTo('screen-phone-verify')">📱 Phone Number Registration</button>
+            <button class="btn btn-outline" style="margin-bottom: 10px; text-align: left;" onclick="navigateTo('screen-email-verify')">✉️ Email Registration</button>
+            <button class="btn btn-outline" style="text-align: left;" onclick="navigateTo('screen-profile-setup')">🌐 Continue with Google</button>
+        </div>
+        <div></div>
+    </div>
+
+    <!-- 5. PHONE VERIFICATION -->
+    <div id="screen-phone-verify" class="screen">
+        <div>
+            <div class="header">
+                <span class="back-btn" onclick="navigateTo('screen-create-account')">← Back</span>
+                <div class="logo-text">Phone OTP</div>
+                <div></div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Enter the 6-digit code sent to your phone.</p>
+            <input type="text" class="input-field" placeholder="1 2 3 4 5 6" style="text-align: center; font-size: 20px; letter-spacing: 5px;">
+        </div>
+        <button class="btn" onclick="navigateTo('screen-set-password')">Verify & Proceed</button>
+    </div>
+
+    <!-- 6. EMAIL VERIFICATION -->
+    <div id="screen-email-verify" class="screen">
+        <div>
+            <div class="header">
+                <span class="back-btn" onclick="navigateTo('screen-create-account')">← Back</span>
+                <div class="logo-text">Email Code</div>
+                <div></div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Enter verification code sent to your email.</p>
+            <input type="text" class="input-field" placeholder="Code" style="text-align: center; font-size: 20px; letter-spacing: 5px;">
+        </div>
+        <button class="btn" onclick="navigateTo('screen-set-password')">Verify & Proceed</button>
+    </div>
+
+    <!-- 8. SET PASSWORD -->
+    <div id="screen-set-password" class="screen">
+        <div>
+            <div class="header">
+                <span class="back-btn" onclick="navigateTo('screen-create-account')">← Back</span>
+                <div class="logo-text">Set Password</div>
+                <div></div>
+            </div>
+            <input type="password" class="input-field" placeholder="New Password">
+            <input type="password" class="input-field" placeholder="Confirm Password">
+        </div>
+        <button class="btn" onclick="navigateTo('screen-profile-setup')">Save Password</button>
+    </div>
+
+    <!-- 9. PROFILE SETUP -->
+    <div id="screen-profile-setup" class="screen">
+        <div>
+            <div class="header">
+                <div class="logo-text">Profile Setup</div>
+                <div></div>
+            </div>
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--neon-blue); display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--neon-blue);">📷</div>
+            </div>
+            <input type="text" class="input-field" placeholder="Display Name (e.g., Thu Ra)">
+            <input type="text" class="input-field" placeholder="Username (e.g., @Tear808)">
+            <input type="text" class="input-field" placeholder="Bio (Hey there! I'm using EuroChat)">
+        </div>
+        <button class="btn" onclick="navigateTo('screen-pending-approval')">Complete Setup</button>
+    </div>
+
+    <!-- 10. PENDING ADMIN APPROVAL -->
+    <div id="screen-pending-approval" class="screen" style="justify-content: center; align-items: center; text-align: center;">
+        <div style="font-size: 50px; margin-bottom: 15px;">⏳</div>
+        <h2 style="margin-bottom: 10px;">Pending Admin Approval</h2>
+        <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 25px;">Your account has been created successfully and is currently awaiting admin verification for security assurance.</p>
+        <button class="btn" onclick="navigateTo('screen-home')">Simulate Admin Approval</button>
+    </div>
+
+    <!-- 11. HOME SCREEN -->
+    <div id="screen-home" class="screen" style="padding-bottom: 0;">
+        <div class="header" style="margin-bottom: 10px;">
+            <div class="logo-text">EuroChat</div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span style="font-size: 18px; cursor: pointer;" onclick="navigateTo('screen-notifications')">🔔</span>
+                <span class="badge" onclick="navigateTo('screen-nearby')">📡 Nearby ON</span>
+            </div>
+        </div>
+
+        <div style="flex: 1; overflow-y: auto; padding-bottom: 70px;">
+            <!-- Stories -->
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Stories</div>
+            <div class="stories-container">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;" onclick="navigateTo('screen-story-viewer')">
+                    <div class="story-ring" style="border-color: var(--accent-pink); display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold;">+</div>
+                    <span style="font-size: 10px; color: var(--text-muted);">My Story</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;" onclick="navigateTo('screen-story-viewer')">
+                    <div class="story-ring"><div class="story-avatar">May</div></div>
+                    <span style="font-size: 10px; color: var(--text-muted);">May</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;" onclick="navigateTo('screen-story-viewer')">
+                    <div class="story-ring"><div class="story-avatar">Aung</div></div>
+                    <span style="font-size: 10px; color: var(--text-muted);">Aung Ko</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;" onclick="navigateTo('screen-story-viewer')">
+                    <div class="story-ring"><div class="story-avatar">Su</div></div>
+                    <span style="font-size: 10px; color: var(--text-muted);">Su Su</span>
+                </div>
+            </div>
+
+            <div style="font-size: 13px; color: var(--text-muted); margin: 15px 0 8px 0;">Recent Chats</div>
+            <div class="card" onclick="navigateTo('screen-chat')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center; font-weight: bold;">M</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">May (Nearby)</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Very Near • Bluetooth Connected</div>
+                    </div>
+                </div>
+                <span style="color: var(--neon-blue); font-size: 12px;">Online</span>
+            </div>
+
+            <div class="card" onclick="navigateTo('screen-group-chat')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center; font-weight: bold;">FG</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">Family Group 👨‍👩‍👧‍👦</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Aung Ko: See you soon!</div>
+                    </div>
+                </div>
+                <span style="font-size: 11px; color: var(--text-muted);">10:42 AM</span>
+            </div>
+
+            <div class="card" onclick="navigateTo('screen-channel-page')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center; font-weight: bold;">📢</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">EuroChat Official Announcement</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Official platform updates & news...</div>
+                    </div>
+                </div>
+                <span class="badge">1.2K</span>
+            </div>
+        </div>
+
+        <!-- Floating AI Assistant -->
+        <div class="floating-ai" onclick="navigateTo('screen-ai-chat')">🤖</div>
+
+        <!-- Bottom Navigation -->
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="navigateTo('screen-home')"><span>💬</span><span>Home</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-nearby')"><span>📡</span><span>Nearby</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-channels')"><span>📢</span><span>Channels</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-ai-characters')"><span>✨</span><span>AI Bot</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-profile')"><span>⚙️</span><span>Profile</span></div>
+        </div>
+    </div>
+
+    <!-- 12. NEARBY SCREEN -->
+    <div id="screen-nearby" class="screen" style="padding-bottom: 0;">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-home')">← Back</span>
+            <div class="logo-text">Nearby Discovery</div>
+            <span style="color: var(--success); font-size: 12px;">Active</span>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding-bottom: 70px;">
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">Scanning local area via Bluetooth & Wi-Fi Direct...</p>
+            
+            <div class="card" onclick="navigateTo('screen-chat')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center;">M</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">May</div>
+                        <div style="font-size: 12px; color: var(--success);">Very Near (~2m) • Bluetooth</div>
+                    </div>
+                </div>
+                <span class="badge">Connect</span>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center;">A</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">Aung Ko</div>
+                        <div style="font-size: 12px; color: var(--warning);">Nearby (~8m) • Wi-Fi Direct</div>
+                    </div>
+                </div>
+                <span class="badge">Connect</span>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <div class="nav-item" onclick="navigateTo('screen-home')"><span>💬</span><span>Home</span></div>
+            <div class="nav-item active" onclick="navigateTo('screen-nearby')"><span>📡</span><span>Nearby</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-channels')"><span>📢</span><span>Channels</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-ai-characters')"><span>✨</span><span>AI Bot</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-profile')"><span>⚙️</span><span>Profile</span></div>
+        </div>
+    </div>
+
+    <!-- 14. CHAT SCREEN -->
+    <div id="screen-chat" class="screen" style="padding-bottom: 10px;">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-home')">← Back</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="font-weight: bold; font-size: 15px;">May</div>
+                <span style="font-size: 10px; color: var(--success);">● Very Near</span>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <span style="cursor: pointer;" onclick="navigateTo('screen-voice-call')">📞</span>
+                <span style="cursor: pointer;" onclick="navigateTo('screen-video-call')">📹</span>
+            </div>
+        </div>
+
+        <div class="chat-container" id="chat-messages-box">
+            <div class="message-bubble incoming">မင်္ဂလာပါ! Bluetooth မှတစ်ဆင့် အင်တာနက်မလိုဘဲ တိုက်ရိုက် ချိတ်ဆက်ထားပါသည်။</div>
+            <div class="message-bubble outgoing">ဟေး မေ! အခြေအနေ ဘယ်လိုလဲ?</div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+            <span style="font-size: 20px; cursor: pointer;" onclick="navigateTo('screen-file-share')">📎</span>
+            <input type="text" id="chat-input-field" class="input-field" placeholder="စာ သို့မဟုတ် မက်ဆေ့ချ် ရေးရန်..." style="margin-bottom: 0;">
+            <button class="btn" style="width: auto; padding: 10px 16px;" onclick="sendChatMessage()">ပို့</button>
+        </div>
+    </div>
+
+    <!-- 15. VOICE CALL SCREEN -->
+    <div id="screen-voice-call" class="screen" style="justify-content: center; align-items: center; text-align: center;">
+        <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--neon-blue); display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 20px auto;">M</div>
+        <h2>May</h2>
+        <p style="color: var(--neon-blue); font-size: 14px; margin-bottom: 40px;">Local Voice Calling...</p>
+        <div style="display: flex; gap: 20px; justify-content: center;">
+            <button class="btn" style="background: #ff4d6d; width: 80px; border-radius: 50%; height: 80px;" onclick="navigateTo('screen-chat')">📞</button>
+        </div>
+    </div>
+
+    <!-- 16. VIDEO CALL SCREEN -->
+    <div id="screen-video-call" class="screen" style="background: #000; padding: 20px; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="back-btn" onclick="navigateTo('screen-chat')">✕ Close</span>
+            <span class="badge">HD Local Video</span>
+        </div>
+        <div style="text-align: center; color: var(--text-muted);">
+            [ Video Stream Connection Active ]
+        </div>
+        <div style="display: flex; justify-content: center; gap: 20px; padding-bottom: 20px;">
+            <button class="btn btn-outline" style="border-radius: 50%; width: 50px; height: 50px;">🎤</button>
+            <button class="btn" style="background: #ff4d6d; border-radius: 50%; width: 60px; height: 60px;" onclick="navigateTo('screen-chat')">📞</button>
+            <button class="btn btn-outline" style="border-radius: 50%; width: 50px; height: 50px;">📹</button>
+        </div>
+    </div>
+
+    <!-- 17. FILE SHARING SCREEN -->
+    <div id="screen-file-share" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-chat')">← Back</span>
+            <div class="logo-text">Share Media & Files</div>
+            <div></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+            <div class="card" onclick="navigateTo('screen-chat')">📁 Send Document / File</div>
+            <div class="card" onclick="navigateTo('screen-chat')">🖼️ Send Photo / Gallery</div>
+            <div class="card" onclick="navigateTo('screen-chat')">📹 Send Video Clip</div>
+            <div class="card" onclick="navigateTo('screen-chat')">🎙️ Record Voice Message</div>
+        </div>
+        <div></div>
+    </div>
+
+    <!-- 18. STORIES & 19. STORY VIEWER -->
+    <div id="screen-story-viewer" class="screen" style="background: #000; padding: 15px; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px;">May</div>
+                <span style="font-size: 13px; font-weight: bold;">May • 12m ago</span>
+            </div>
+            <span style="cursor: pointer;" onclick="navigateTo('screen-home')">✕</span>
+        </div>
+        <div style="text-align: center; font-size: 18px; color: var(--neon-blue);">
+            "Good Vibes Only ✨"
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" class="input-field" placeholder="Reply to Story..." style="margin-bottom: 0;">
+            <button class="btn" style="width: auto;" onclick="navigateTo('screen-home')">❤️</button>
+        </div>
+    </div>
+
+    <!-- 20. CHANNELS & 21. CHANNEL PAGE -->
+    <div id="screen-channels" class="screen" style="padding-bottom: 0;">
+        <div class="header">
+            <div class="logo-text">Channels & Groups</div>
+            <span style="cursor: pointer; color: var(--neon-blue);" onclick="navigateTo('screen-create-channel')">+ Create</span>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding-bottom: 70px;">
+            <div class="card" onclick="navigateTo('screen-channel-page')">
+                <div>
+                    <div style="font-weight: bold;">EuroChat Official Announcement 📢</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">1.2K members • Public</div>
+                </div>
+                <span class="badge">Joined</span>
+            </div>
+            <div class="card">
+                <div>
+                    <div style="font-weight: bold;">Tech & AI Hub</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">540 members • Public</div>
+                </div>
+                <span class="badge" style="background: transparent; border: 1px solid var(--neon-blue);">Join</span>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <div class="nav-item" onclick="navigateTo('screen-home')"><span>💬</span><span>Home</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-nearby')"><span>📡</span><span>Nearby</span></div>
+            <div class="nav-item active" onclick="navigateTo('screen-channels')"><span>📢</span><span>Channels</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-ai-characters')"><span>✨</span><span>AI Bot</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-profile')"><span>⚙️</span><span>Profile</span></div>
+        </div>
+    </div>
+
+    <div id="screen-channel-page" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-channels')">← Back</span>
+            <div style="font-weight: bold;">EuroChat Official</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div style="text-align: center; margin: 15px 0;">
+                <h3 style="color: var(--neon-blue); margin-bottom: 5px;">EuroChat Official Announcement</h3>
+                <p style="color: var(--text-muted); font-size: 12px;">Official updates and announcements from the development team.</p>
+            </div>
+            <div class="card" style="display: block;">
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;">Today • Admin</div>
+                <div style="font-size: 13px;">Welcome to EuroChat! Enjoy secure offline nearby messaging and AI integration.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 22. CREATE CHANNEL -->
+    <div id="screen-create-channel" class="screen">
+        <div>
+            <div class="header">
+                <span class="back-btn" onclick="navigateTo('screen-channels')">← Back</span>
+                <div class="logo-text">Create Channel</div>
+                <div></div>
+            </div>
+            <input type="text" class="input-field" placeholder="Channel Name">
+            <input type="text" class="input-field" placeholder="Description (optional)">
+        </div>
+        <button class="btn" onclick="navigateTo('screen-channels')">Create Channel</button>
+    </div>
+
+    <!-- 24. GROUP CHAT -->
+    <div id="screen-group-chat" class="screen" style="padding-bottom: 10px;">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-home')">← Back</span>
+            <div style="font-weight: bold;">Family Group 👨‍👩‍👧‍👦</div>
+            <span style="font-size: 12px; color: var(--neon-blue);">4 Members</span>
+        </div>
+        <div class="chat-container">
+            <div class="message-bubble incoming"><b>Aung Ko:</b> မင်္ဂလာပါ မိသားစုရေ!</div>
+            <div class="message-bubble outgoing">ဟေး Aung Ko၊ အားလုံး အဆင်ပြေကြရဲ့လား?</div>
+        </div>
+        <div style="display: flex; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+            <input type="text" class="input-field" placeholder="Group သို့ စာပို့ရန်..." style="margin-bottom: 0;">
+            <button class="btn" style="width: auto; padding: 10px 16px;">ပို့</button>
+        </div>
+    </div>
+
+    <!-- 25. AI CHAT & 26. AI CHARACTERS -->
+    <div id="screen-ai-characters" class="screen" style="padding-bottom: 0;">
+        <div class="header">
+            <div class="logo-text">AI Assistant & Characters</div>
+            <div>✨</div>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding-bottom: 70px;">
+            <div class="card" onclick="navigateTo('screen-ai-chat')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center;">🤖</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">EuroChat AI Assistant</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Always ready to help & answer questions</div>
+                    </div>
+                </div>
+                <span class="badge">Online</span>
+            </div>
+            <div class="card" onclick="navigateTo('screen-ai-chat')">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center;">🧙‍♂️</div>
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px;">Story Companion</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Fictional character for creative stories</div>
+                    </div>
+                </div>
+                <span class="badge">Chat</span>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <div class="nav-item" onclick="navigateTo('screen-home')"><span>💬</span><span>Home</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-nearby')"><span>📡</span><span>Nearby</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-channels')"><span>📢</span><span>Channels</span></div>
+            <div class="nav-item active" onclick="navigateTo('screen-ai-characters')"><span>✨</span><span>AI Bot</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-profile')"><span>⚙️</span><span>Profile</span></div>
+        </div>
+    </div>
+
+    <!-- AI CHAT ROOM -->
+    <div id="screen-ai-chat" class="screen" style="padding-bottom: 10px;">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-home')">← Back</span>
+            <div style="font-weight: bold;">AI Assistant 🤖</div>
+            <span class="badge">Online / Offline Ready</span>
+        </div>
+        <div class="chat-container" id="ai-chat-box">
+            <div class="message-bubble incoming">မင်္ဂလာပါ Thu Ra! ကျွန်တော်က သင့်ရဲ့ AI Assistant ပါ။ ဘယ်လိုကူညီပေးရမလဲ?</div>
+        </div>
+        <div style="display: flex; gap: 8px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+            <input type="text" id="ai-input" class="input-field" placeholder="AI ကို မေးစရာရှိတာ မေးပါ..." style="margin-bottom: 0;">
+            <button class="btn" style="width: auto; padding: 10px 16px;" onclick="sendAIChat()">မေး</button>
+        </div>
+    </div>
+
+    <!-- 29. PROFILE & 31. SETTINGS -->
+    <div id="screen-profile" class="screen" style="padding-bottom: 0;">
+        <div class="header">
+            <div class="logo-text">Profile Settings</div>
+            <span style="color: var(--neon-blue); cursor: pointer;" onclick="navigateTo('screen-premium')">⭐ Premium</span>
+        </div>
+        <div style="flex: 1; overflow-y: auto; padding-bottom: 70px;">
+            <div style="text-align: center; margin: 15px 0;">
+                <div style="width: 70px; height: 70px; background: var(--bg-card); border: 2px solid var(--neon-blue); border-radius: 50%; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--neon-blue);">T</div>
+                <div style="font-weight: bold; font-size: 16px;">Thu Ra</div>
+                <div style="font-size: 12px; color: var(--text-muted);">@Tear808</div>
+            </div>
+            
+            <div class="card" onclick="navigateTo('screen-settings')"><span>⚙️ App Settings & Privacy</span><span>›</span></div>
+            <div class="card" onclick="navigateTo('screen-premium')"><span>⭐ EuroChat Premium</span><span style="color: var(--neon-blue);">Upgrade</span></div>
+            <div class="card" onclick="navigateTo('screen-welcome')"><span style="color: #ff4d6d;">🚪 Log Out</span><span>›</span></div>
+        </div>
+        <div class="nav-bar">
+            <div class="nav-item" onclick="navigateTo('screen-home')"><span>💬</span><span>Home</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-nearby')"><span>📡</span><span>Nearby</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-channels')"><span>📢</span><span>Channels</span></div>
+            <div class="nav-item" onclick="navigateTo('screen-ai-characters')"><span>✨</span><span>AI Bot</span></div>
+            <div class="nav-item active" onclick="navigateTo('screen-profile')"><span>⚙️</span><span>Profile</span></div>
+        </div>
+    </div>
+
+    <!-- SETTINGS SCREEN -->
+    <div id="screen-settings" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-profile')">← Back</span>
+            <div class="logo-text">Settings</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div class="card"><span>🔒 Privacy & Security</span><span>›</span></div>
+            <div class="card"><span>🔔 Notifications</span><span>›</span></div>
+            <div class="card"><span>🌐 Language (Myanmar / English)</span><span>›</span></div>
+            <div class="card"><span>🎨 Dark Navy & Neon Theme</span><span style="color: var(--neon-blue);">Active</span></div>
+            <div class="card"><span>📡 Nearby Discovery Mode</span><span style="color: var(--success);">ON</span></div>
+        </div>
+    </div>
+
+    <!-- 34. PREMIUM & 35. MANUAL PAYMENT -->
+    <div id="screen-premium" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-profile')">← Back</span>
+            <div class="logo-text">EuroChat Premium</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div style="text-align: center; margin: 15px 0;">
+                <h3 style="color: var(--neon-blue); margin-bottom: 5px;">Unlock Full Potential</h3>
+                <p style="color: var(--text-muted); font-size: 12px;">Exclusive AI characters, larger file sharing limits, and premium badge.</p>
+            </div>
+            <div class="card" style="background: linear-gradient(135deg, var(--bg-card), #1b263b); border-color: var(--neon-blue);">
+                <div>
+                    <div style="font-weight: bold; color: var(--neon-blue);">Lifetime / Monthly Premium</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Manual bank/PromptPay transfer</div>
+                </div>
+                <div style="font-weight: bold; font-size: 16px;">$4.99</div>
+            </div>
+            <button class="btn" style="margin-top: 15px;" onclick="navigateTo('screen-payment')">Proceed to Manual Payment</button>
+        </div>
+    </div>
+
+    <div id="screen-payment" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-premium')">← Back</span>
+            <div class="logo-text">Manual Payment</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">1. Transfer to PromptPay / KBZPay: <b>09-XXXXXXXX</b></p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">2. Upload receipt screenshot & enter Transaction ID below:</p>
+            <input type="text" class="input-field" placeholder="Transaction / Reference ID">
+            <input type="file" class="input-field" style="padding: 10px;">
+        </div>
+        <button class="btn" onclick="navigateTo('screen-payment-pending')">Submit Payment</button>
+    </div>
+
+    <div id="screen-payment-pending" class="screen" style="justify-content: center; align-items: center; text-align: center;">
+        <div style="font-size: 50px; margin-bottom: 15px;">⏳</div>
+        <h2 style="margin-bottom: 10px;">Payment Pending Approval</h2>
+        <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 25px;">Your receipt has been submitted and is pending verification by EuroChat Admin.</p>
+        <button class="btn" onclick="navigateTo('screen-profile')">Back to Profile</button>
+    </div>
+
+    <!-- 38. ADMIN LOGIN & 39. ADMIN DASHBOARD -->
+    <div id="screen-admin-login" class="screen">
+        <div>
+            <div class="header">
+                <span class="back-btn" onclick="navigateTo('screen-splash')">← Back</span>
+                <div class="logo-text">Admin Secure Portal</div>
+                <div></div>
+            </div>
+            <div style="margin-top: 30px;">
+                <label style="font-size: 12px; color: var(--text-muted);">Admin ID / Email</label>
+                <input type="text" class="input-field" placeholder="admin@eurochat.com" style="margin-top: 5px;">
+                <label style="font-size: 12px; color: var(--text-muted);">Admin Password</label>
+                <input type="password" class="input-field" placeholder="••••••••••••" style="margin-top: 5px;">
+            </div>
+        </div>
+        <button class="btn" style="background: linear-gradient(135deg, var(--warning), #f77f00); color: #000;" onclick="navigateTo('screen-admin-dashboard')">Sign In (2FA)</button>
+    </div>
+
+    <div id="screen-admin-dashboard" class="screen">
+        <div class="header">
+            <div class="logo-text" style="color: var(--warning);">Admin Dashboard 🔒</div>
+            <span style="color: var(--text-muted); font-size: 12px; cursor: pointer;" onclick="navigateTo('screen-home')">Exit Admin</span>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <div class="card" style="flex-direction: column; align-items: flex-start; margin-bottom: 0;">
+                    <div style="font-size: 12px; color: var(--text-muted);">Total Users</div>
+                    <div style="font-size: 20px; font-weight: bold; color: var(--neon-blue);">12,487</div>
+                </div>
+                <div class="card" style="flex-direction: column; align-items: flex-start; margin-bottom: 0;">
+                    <div style="font-size: 12px; color: var(--text-muted);">Pending Approvals</div>
+                    <div style="font-size: 20px; font-weight: bold; color: var(--warning);">3</div>
+                </div>
+            </div>
+
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Admin Management Sections</div>
+            <div class="card" onclick="navigateTo('screen-admin-users')">👥 User Approvals & Management</div>
+            <div class="card" onclick="navigateTo('screen-admin-payments')">💳 Payment & Premium Verification</div>
+            <div class="card" onclick="navigateTo('screen-admin-ai')">🤖 AI Characters & Offline Content</div>
+            <div class="card" onclick="navigateTo('screen-admin-channel')">📢 Official Announcement Channel</div>
+        </div>
+    </div>
+
+    <!-- ADMIN USER MANAGEMENT -->
+    <div id="screen-admin-users" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-admin-dashboard')">← Back</span>
+            <div style="font-weight: bold; color: var(--warning);">User Management</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div class="card">
+                <div>
+                    <div style="font-weight: bold;">Thu Ra (@Tear808)</div>
+                    <div style="font-size: 12px; color: var(--warning);">Status: Pending Approval</div>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn" style="padding: 6px 10px; font-size: 11px;" onclick="alert('User Approved!')">Approve</button>
+                    <button class="btn btn-outline" style="padding: 6px 10px; font-size: 11px; color: #ff4d6d; border-color: #ff4d6d;">Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN PAYMENTS -->
+    <div id="screen-admin-payments" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-admin-dashboard')">← Back</span>
+            <div style="font-weight: bold; color: var(--warning);">Payment Verification</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div class="card">
+                <div>
+                    <div style="font-weight: bold;">Thu Ra - Premium ($4.99)</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">TxID: TR-998231 • KBZPay</div>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn" style="padding: 6px 10px; font-size: 11px;" onclick="alert('Payment Approved & Premium Activated!')">Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN AI & CHANNEL STUBS -->
+    <div id="screen-admin-ai" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-admin-dashboard')">← Back</span>
+            <div style="font-weight: bold; color: var(--warning);">AI & Offline Prompts</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <div class="card"><span>🤖 Manage AI Characters</span><span>›</span></div>
+            <div class="card"><span>📄 Edit offline_ai_responses.json</span><span>›</span></div>
+        </div>
+    </div>
+
+    <div id="screen-admin-channel" class="screen">
+        <div class="header">
+            <span class="back-btn" onclick="navigateTo('screen-admin-dashboard')">← Back</span>
+            <div style="font-weight: bold; color: var(--warning);">Admin Channel Broadcast</div>
+            <div></div>
+        </div>
+        <div style="flex: 1; overflow-y: auto;">
+            <input type="text" class="input-field" placeholder="Announcement Title">
+            <textarea class="input-field" placeholder="Broadcast message to all EuroChat users..." style="height: 100px; resize: none;"></textarea>
+            <button class="btn" style="background: var(--warning); color: #000;" onclick="alert('Broadcast sent to all users successfully!')">Publish Announcement</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function navigateTo(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function sendChatMessage() {
+        let input = document.getElementById('chat-input-field');
+        let text = input.value.trim();
+        if(!text) return;
+        let box = document.getElementById('chat-messages-box');
+        let msg = document.createElement('div');
+        msg.className = 'message-bubble outgoing';
+        msg.innerText = text;
+        box.appendChild(msg);
+        input.value = '';
+        box.scrollTop = box.scrollHeight;
+
+        setTimeout(() => {
+            let reply = document.createElement('div');
+            reply.className = 'message-bubble incoming';
+            reply.innerText = `လက်ခံရရှိပါပြီ (Bluetooth/Online): ${text}`;
+            box.appendChild(reply);
+            box.scrollTop = box.scrollHeight;
+        }, 1000);
+    }
+
+    function sendAIChat() {
+        let input = document.getElementById('ai-input');
+        let text = input.value.trim();
+        if(!text) return;
+        let box = document.getElementById('ai-chat-box');
+        let msg = document.createElement('div');
+        msg.className = 'message-bubble outgoing';
+        msg.innerText = text;
+        box.appendChild(msg);
+        input.value = '';
+        box.scrollTop = box.scrollHeight;
+
+        setTimeout(() => {
+            let reply = document.createElement('div');
+            reply.className = 'message-bubble incoming';
+            reply.innerText = `EuroChat AI: ${text} နှင့် ပတ်သက်၍ အကောင်းဆုံး ကူညီပေးပါမည်။`;
+            box.appendChild(reply);
+            box.scrollTop = box.scrollHeight;
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
