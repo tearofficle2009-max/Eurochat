@@ -1,19 +1,25 @@
 const express = require('express');
+const http = require('http');
 const path = require('path');
+const { Server } = require("socket.io");
+
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// ပုံနဲ့ HTML ဖိုင်များ ထည့်ထားမည့် public folder ကို ချိတ်ဆက်ခြင်း
-app.use(express.static(__dirname));
+// Static files (index.html, CSS, Images စသည်တို့အတွက်)
+app.use(express.static(path.join(__dirname)));
 
-// ပင်မလင့်ခ် (Root URL) ဝင်လိုက်တာနဲ့ index.html (Splash Screen) ပေါ်လာစေရန်
+// Root URL ဝင်ပါက index.html ပြရန်
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// မက်ဆေ့ချ်များအတွက် API 
+// မက်ဆေ့ချ်မှတ်တမ်း API 
 let messages = [];
 
 app.get('/messages', (req, res) => {
@@ -27,9 +33,26 @@ app.post('/messages', (req, res) => {
     }
     const newMessage = { sender, text, timestamp: new Date() };
     messages.push(newMessage);
+    
+    // Real-time broadcast to connected clients
+    io.emit('chat message', newMessage);
+    
     res.status(201).json(newMessage);
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Real-time Socket.io Connection
+io.on('connection', (socket) => {
+    console.log('User connected via Socket.io');
+
+    socket.on('chat message', (msg) => {
+        socket.broadcast.emit('chat message', msg);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+server.listen(PORT, () => {
+    console.log(`EuroChat server is running on port ${PORT}`);
 });
