@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EuroChat - Hybrid Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #050B14;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            background-color: #050B14;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        .heading {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00f0ff;
+        }
+
+        .sub-heading {
+            color: #8a99ad;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Chat Screen & Messages */
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .message.incoming {
+            background-color: #0d1b2a;
+            color: #ffffff;
+            align-self: flex-start;
+            border: 1px solid #1b263b;
+        }
+
+        .message.outgoing {
+            background-color: #00f0ff;
+            color: #050B14;
+            align-self: flex-end;
+            font-weight: 500;
+        }
+
+        /* Chat Input Footer */
+        .chat-footer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #1b263b;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            background-color: #0d1b2a;
+            border: 1px solid #1b263b;
+            border-radius: 20px;
+            color: #ffffff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            border-color: #00f0ff;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #00f0ff;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .send-btn {
+            background-color: #00f0ff;
+            color: #050B14;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Mode Selector (Offline/Online) */
+        .mode-banner {
+            background-color: #0d1b2a;
+            border: 1px solid #00f0ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        /* Common buttons */
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            background-color: #00f0ff;
+            color: #050B14;
+            margin-top: 10px;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #00f0ff;
+            border: 1px solid #00f0ff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Main Chat & Hybrid Connection Screen -->
+    <div id="main-chat-screen" class="screen active">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div class="heading">EuroChat</div>
+                <button class="action-btn" onclick="showScreen('mode-screen')">⚙️ Mode</button>
+            </div>
+            
+            <!-- Connection Mode Status -->
+            <div class="mode-banner">
+                <span id="current-mode">📡 Mode: Auto (Bluetooth/Wi-Fi & Internet)</span>
+                <span style="color: #00f0ff; cursor: pointer;" onclick="toggleConnection()">Switch</span>
+            </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-box" id="chat-messages">
+            <div class="message incoming">မင်္ဂလာပါ! အနီးနားစက်ပစ္စည်း သို့မဟုတ် အင်ترنتဖြင့် ချိတ်ဆက်ထားပါသည်။</div>
+        </div>
+
+        <!-- Input & Media Sending Area -->
+        <div class="chat-footer">
+            <!-- Media Upload (Photo/Video) -->
+            <input type="file" id="media-file" style="display: none;" accept="image/*,video/*" onchange="sendMedia(event)">
+            <button class="action-btn" onclick="document.getElementById('media-file').click()">📎</button>
+            
+            <input type="text" id="msg-input" class="chat-input" placeholder="စာ သို့မဟုတ် မက်ဆေ့ချ် ရေးရန်...">
+            <button class="send-btn" onclick="sendMessage()">ပို့မည်</button>
+        </div>
+    </div>
+
+    <!-- 2. Connection Settings Screen -->
+    <div id="mode-screen" class="screen">
+        <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <span style="color: #00f0ff; cursor: pointer; font-size: 18px;" onclick="showScreen('main-chat-screen')">← Back</span>
+                <div class="heading">ချိတ်ဆက်မှု ရွေးချယ်ရန်</div>
+            </div>
+            <div class="sub-heading">အင်တာနက်မလိုဘဲ (သို့) အင်တာနက်သုံး၍ ချိတ်ဆက်မည့်ပုံစံကို ရွေးပါ။</div>
+
+            <button class="btn" onclick="setMode('Bluetooth / Wi-Fi Direct (Offline)')">🔵 Bluetooth / Wi-Fi Direct (အင်တာနက်မလို)</button>
+            <button class="btn btn-outline" onclick="setMode('Internet (Online / Distance)')">🌐 အင်တာနက် (ဝေးကွာနေစဉ်)</button>
+        </div>
+        <div></div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        let isOnlineMode = false;
+
+        function setMode(modeName) {
+            document.getElementById('current-mode').innerText = `📡 Mode: ${modeName}`;
+            showScreen('main-chat-screen');
+            alert(`ပြောင်းလဲပြီးပါပြီ: ${modeName}`);
+        }
+
+        function toggleConnection() {
+            isOnlineMode = !isOnlineMode;
+            let modeText = isOnlineMode ? "Internet (Online)" : "Bluetooth / Wi-Fi Direct (Offline)";
+            document.getElementById('current-mode').innerText = `📡 Mode: ${modeText}`;
+        }
+
+        function sendMessage() {
+            let input = document.getElementById('msg-input');
+            let text = input.value.trim();
+            if(!text) return;
+
+            let chatBox = document.getElementById('chat-messages');
+            
+            // User message (Outgoing)
+            let msgDiv = document.createElement('div');
+            msgDiv.className = 'message outgoing';
+            msgDiv.innerText = text;
+            chatBox.appendChild(msgDiv);
+
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Simulated auto reply based on mode
+            setTimeout(() => {
+                let replyDiv = document.createElement('div');
+                replyDiv.className = 'message incoming';
+                replyDiv.innerText = `လက်ခံရရှိပါပြီ (${isOnlineMode ? 'Online' : 'Offline Direct'}): ${text}`;
+                chatBox.appendChild(replyDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 1000);
+        }
+
+        function sendMedia(event) {
+            let file = event.target.files[0];
+            if(!file) return;
+
+            let chatBox = document.getElementById('chat-messages');
+            let fileDiv = document.createElement('div');
+            fileDiv.className = 'message outgoing';
+            
+            if(file.type.startsWith('video/')) {
+                fileDiv.innerHTML = `📹 ဗီဒီယိုဖိုင် ပို့လိုက်ပါပြီ: <br><b>${file.name}</b>`;
+            } else {
+                fileDiv.innerHTML = `📷 ပုံဖိုင် ပို့လိုက်ပါပြီ: <br><b>${file.name}</b>`;
+            }
+            
+            chatBox.appendChild(fileDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>
