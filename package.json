@@ -1,13 +1,14 @@
 {
   "name": "eurochat",
   "version": "1.0.0",
-  "description": "EuroChat Hybrid Communication Social App",
+  "description": "EuroChat Hybrid Communication Social App with Gemini AI",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "@google/genai": "^0.1.1"
   }
 }
